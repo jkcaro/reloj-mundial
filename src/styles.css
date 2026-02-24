@@ -1,0 +1,871 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+/* =========================================================
+   MDN BASE
+   - Reset simple
+   - Variables CSS (custom properties)
+   - color-scheme para controles nativos (select, etc.)
+========================================================= */
+
+/* Reset mínimo (MDN-style) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-family:
+    'Poppins',
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial,
+    sans-serif;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* =========================================================
+   TOKENS (variables)
+========================================================= */
+
+:root {
+  /* ✅ MDN: esquema por defecto */
+  color-scheme: light;
+
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #18191a;
+  --muted: rgba(24, 25, 26, 0.7);
+
+  --accent: #2d9cdb;
+  --accent-2: #56ccf2;
+
+  --shadow: 0 15px 25px rgba(0, 0, 0, 0.08), 0 25px 45px rgba(0, 0, 0, 0.08);
+  --ring: 0 0 0 4px rgba(45, 156, 219, 0.25);
+
+  --clock-size: clamp(260px, 72vw, 400px);
+  --clock-border: clamp(7px, 2vw, 12px);
+  --clock-inner-ring: clamp(8px, 2.2vw, 10px);
+  --clock-inset: clamp(14px, 4vw, 20px);
+
+  --clock-shift: -230px;
+}
+
+/* Themes (solo variables) */
+body[data-theme='ocean'] {
+  --accent: #2d9cdb;
+  --accent-2: #56ccf2;
+  --ring: 0 0 0 4px rgba(45, 156, 219, 0.25);
+}
+body[data-theme='sunset'] {
+  --accent: #f2994a;
+  --accent-2: #eb5757;
+  --ring: 0 0 0 4px rgba(242, 153, 74, 0.25);
+}
+body[data-theme='forest'] {
+  --accent: #27ae60;
+  --accent-2: #6fcf97;
+  --ring: 0 0 0 4px rgba(39, 174, 96, 0.25);
+}
+
+/* Dark mode tokens */
+body.dark {
+  /* ✅ MDN: esquema oscuro para controles nativos (select dropdown) */
+  color-scheme: dark;
+
+  --bg: #111213;
+  --surface: #18191a;
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.75);
+  --shadow: 0 15px 30px rgba(0, 0, 0, 0.35), 0 35px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+body {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+
+  /* anti-salto */
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+body.app-ready {
+  opacity: 1;
+}
+
+/* background blobs */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 420px at 15% 10%, rgba(86, 204, 242, 0.3), transparent 60%),
+    radial-gradient(900px 420px at 85% 15%, rgba(45, 156, 219, 0.25), transparent 60%),
+    radial-gradient(900px 420px at 50% 95%, rgba(231, 76, 60, 0.12), transparent 60%);
+  filter: saturate(1.1);
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+  padding: 28px 18px;
+  width: min(900px, 100%);
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow);
+
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+body.dark .topbar {
+  background: rgba(24, 25, 26, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* readout */
+.readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 170px;
+}
+
+.readout__time {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+}
+
+.readout__date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* brand */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 120px;
+}
+
+.brand__name {
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.brand__tag {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* controls wrapper */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* =========================================================
+   THEME SWITCH
+========================================================= */
+
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+body.dark .theme-switch {
+  background: rgba(24, 25, 26, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.theme-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.theme-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.dark .theme-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.theme-btn.is-active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0b0c0d;
+}
+
+.theme-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* =========================================================
+   MODE SWITCH
+========================================================= */
+
+.mode-switch {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 400;
+
+  color: var(--surface);
+  background: linear-gradient(135deg, var(--text), var(--accent));
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  user-select: none;
+  border: none;
+}
+
+.mode-switch:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* =========================================================
+   SELECTS (MDN-ish + color-scheme)
+========================================================= */
+
+.zona-switch,
+.ciudad-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+  max-width: 260px;
+}
+
+body.dark .zona-switch,
+body.dark .ciudad-switch {
+  background: rgba(24, 25, 26, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.zona-switch label,
+.ciudad-switch__label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* select cerrado */
+.zona-switch select,
+.ciudad-switch__select {
+  max-width: 170px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  color: var(--text);
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+
+  outline: none;
+  cursor: pointer;
+}
+
+/* select cerrado dark */
+body.dark .zona-switch select,
+body.dark .ciudad-switch__select {
+  background: rgba(24, 25, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* opciones (no siempre aplica, pero ayuda) */
+body.dark .zona-switch select option,
+body.dark .ciudad-switch__select option {
+  background-color: #18191a;
+  color: #fff;
+}
+
+.zona-switch:focus-within,
+.ciudad-switch:focus-within {
+  box-shadow: var(--ring);
+}
+
+/* =========================================================
+   WEATHER
+========================================================= */
+
+.weather {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-width: 190px;
+}
+
+body.dark .weather {
+  background: rgba(24, 25, 26, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.weather__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.weather__temp {
+  font-weight: 650;
+  letter-spacing: 0.4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.weather__desc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  width: 100%;
+  max-width: 1400px;
+}
+
+.clock-section,
+.forecast-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
+
+.forecast-section {
+  flex-direction: column;
+}
+
+.clock-wrapper {
+  width: 100%;
+  max-width: 550px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transform: translateY(var(--clock-shift));
+}
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+.clock {
+  display: flex;
+  height: var(--clock-size);
+  width: var(--clock-size);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 1;
+
+  border: var(--clock-border) solid var(--accent);
+  outline: 2px solid rgba(0, 0, 0, 0.1);
+  outline-offset: 4px;
+  overflow: hidden;
+}
+
+body.dark .clock {
+  background: rgba(24, 25, 26, 0.75);
+  outline: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.clock::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: url('https://picsum.photos/600') center / cover no-repeat;
+  opacity: 0.25;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.clock::after {
+  content: '';
+  position: absolute;
+  inset: var(--clock-inner-ring);
+  border-radius: 50%;
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+  z-index: 2;
+}
+
+body.dark .clock::after {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.label {
+  position: absolute;
+  inset: var(--clock-inset);
+  text-align: center;
+  transform: rotate(calc(var(--i) * (360deg / 12)));
+  z-index: 2;
+}
+
+.label span {
+  display: inline-block;
+  font-size: clamp(18px, 5.5vw, 30px);
+  font-weight: 600;
+  color: var(--text);
+  transform: rotate(calc(var(--i) * (-360deg / 12)));
+}
+
+.indicator {
+  position: absolute;
+  height: clamp(8px, 2.2vw, 10px);
+  width: clamp(8px, 2.2vw, 10px);
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
+
+.indicator::before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  z-index: 100;
+  background: var(--text);
+  border: clamp(3px, 1vw, 4px) solid var(--accent);
+}
+
+.hand {
+  position: absolute;
+  height: calc(var(--clock-size) * 0.325);
+  width: clamp(3px, 0.9vw, 4px);
+  bottom: 0;
+  border-radius: 25px;
+  transform-origin: bottom;
+  background: var(--accent);
+  transition: none;
+}
+
+.hand.minute {
+  height: calc(var(--clock-size) * 0.3);
+  width: clamp(4px, 1.1vw, 5px);
+  background: var(--text);
+}
+
+.hand.hour {
+  height: calc(var(--clock-size) * 0.25);
+  width: clamp(6px, 1.6vw, 8px);
+  background: var(--text);
+}
+
+/* =========================================================
+   FORECAST
+========================================================= */
+
+.forecast {
+  width: 100%;
+  max-width: 550px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  transform: scale(0.75);
+  transform-origin: top center;
+}
+
+body.dark .forecast {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.forecast__title {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+}
+
+.forecast__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.forecast__list::-webkit-scrollbar {
+  display: none;
+}
+.forecast__list {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.forecast-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  min-width: 110px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.forecast-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.forecast-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.forecast-day {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.forecast-temp {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-direction: column;
+}
+
+.temp-max {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.temp-min {
+  color: #a0a0a0;
+  font-size: 1rem;
+}
+
+/* =========================================================
+   TRANSITIONS + ANIM
+========================================================= */
+
+.clock,
+.weather,
+.readout {
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+
+.fade-out {
+  opacity: 0;
+  transform: scale(0.96);
+  filter: blur(4px);
+}
+
+@keyframes giroSuave {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+.pais-change {
+  animation: giroSuave 0.6s ease;
+  transform-style: preserve-3d;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  .clock-wrapper,
+  .forecast {
+    max-width: 450px;
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --clock-shift: -20px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .readout,
+  .weather,
+  .brand,
+  .controls {
+    width: 100%;
+  }
+
+  .brand {
+    align-items: flex-start;
+  }
+
+  .controls {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .zona-switch,
+  .ciudad-switch,
+  .theme-switch,
+  .mode-switch {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .zona-switch,
+  .ciudad-switch {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .zona-switch select,
+  .ciudad-switch__select {
+    width: 100%;
+    max-width: 100%;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .theme-switch {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .theme-btn {
+    flex: 1 1 30%;
+    text-align: center;
+  }
+
+  .clock-wrapper {
+    max-width: 320px;
+  }
+
+  .forecast {
+    max-width: 100%;
+    padding: 20px 15px;
+  }
+
+  .forecast__title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .forecast__list {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+  }
+
+  .forecast-item {
+    padding: 12px 8px;
+    min-width: 80px;
+  }
+
+  .forecast-icon {
+    font-size: 1.6rem;
+    height: 35px;
+  }
+
+  .forecast-day {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .temp-max {
+    font-size: 1.1rem;
+  }
+  .temp-min {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .container,
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .topbar {
+    position: relative !important;
+    transform: none !important;
+    width: min(520px, 92vw);
+    margin: 16px auto 0;
+    z-index: 2;
+  }
+
+  .clock,
+  .clock-wrapper {
+    position: relative !important;
+    transform: none !important;
+    width: min(420px, 92vw);
+    height: min(420px, 92vw);
+    margin: 18px auto 24px;
+    z-index: 1;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+/* ===== Fix layout: no centrar verticalmente, permitir ver el topbar ===== */
+body {
+  align-items: flex-start; /* antes: center */
+  justify-content: flex-start; /* antes: center */
+  padding-top: 24px;
+}
+
+/* para que no quede pegado a los bordes */
+.container {
+  margin: 0 auto;
+}
+
+/* en móviles, menos padding */
+@media (max-width: 520px) {
+  body {
+    padding-top: 14px;
+  }
+}

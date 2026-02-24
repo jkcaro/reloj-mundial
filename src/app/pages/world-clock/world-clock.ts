@@ -1,7 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-type Clock = { city: string; tz: string; time: string };
+import { iniciarPWA, iniciarTema, iniciarModo } from './js/pwa';
+import { iniciarReloj } from './js/reloj';
+import { iniciarCiudades, getEstado } from './js/ciudades';
+import { iniciarClima } from './js/clima';
 
 @Component({
   selector: 'app-world-clock',
@@ -10,36 +13,23 @@ type Clock = { city: string; tz: string; time: string };
   templateUrl: './world-clock.html',
   styleUrl: './world-clock.scss',
 })
-export class WorldClockComponent implements OnInit, OnDestroy {
+export class WorldClockComponent implements AfterViewInit {
 
-  clocks: Clock[] = [
-    { city: 'Madrid', tz: 'Europe/Madrid', time: '' },
-    { city: 'Bogotá', tz: 'America/Bogota', time: '' },
-    { city: 'New York', tz: 'America/New_York', time: '' },
-    { city: 'Tokyo', tz: 'Asia/Tokyo', time: '' },
-  ];
+  private iniciarApp(): void {
+    iniciarPWA();              // Service Worker + PWA
+    iniciarTema();             // tema guardado + listeners
+    iniciarModo();             // modo oscuro guardado + listener
 
-  private timerId: any;
-
-  ngOnInit(): void {
-    this.updateTimes();
-    this.timerId = setInterval(() => this.updateTimes(), 1000);
+    iniciarCiudades();         // zona + ciudad + bandera (guardado)
+    iniciarReloj(getEstado);   // reloj por zona (sweep)
+    iniciarClima(getEstado);   // clima + pronóstico por ciudad/zona
   }
 
-  ngOnDestroy(): void {
-    clearInterval(this.timerId);
-  }
+  ngAfterViewInit(): void {
+    this.iniciarApp();
 
-  private updateTimes(): void {
-    const now = new Date();
-    this.clocks = this.clocks.map(c => ({
-      ...c,
-      time: new Intl.DateTimeFormat('es-ES', {
-        timeZone: c.tz,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      }).format(now),
-    }));
+    requestAnimationFrame(() => {
+      document.body.classList.add('app-ready');
+    });
   }
 }

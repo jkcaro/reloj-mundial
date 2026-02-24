@@ -1,7 +1,87 @@
-<h1>Reloj Mundial</h1>
+<main class="container">
 
-<ul>
-  <li *ngFor="let c of clocks">
-    <strong>{{ c.city }}</strong> ({{ c.tz }}): {{ c.time }}
-  </li>
-</ul>
+  <header class="topbar">
+
+    <div class="readout">
+      <div class="readout__time" id="digital-time">--:--:--</div>
+      <div class="readout__date" id="digital-date">---</div>
+    </div>
+
+    <div class="weather" aria-label="Clima actual">
+      <div class="weather__icon" id="weather-icon">⛅</div>
+      <div class="weather__info">
+        <div class="weather__temp" id="weather-temp">--°C</div>
+        <div class="weather__desc" id="weather-desc">Cargando clima...</div>
+      </div>
+    </div>
+
+    <div class="brand">
+      <div class="brand__name"></div>
+      <div class="brand__tag">Hora + Clima</div>
+    </div>
+
+    <div class="controls">
+
+      <div class="zona-switch" aria-label="Seleccionar zona horaria">
+        <span id="bandera-actual" aria-hidden="true">🌍</span>
+        <label for="zona">Zona</label>
+        <select id="zona" aria-label="Zona horaria">
+          <option value="" disabled selected>Seleccionar País</option>
+        </select>
+      </div>
+
+      <div class="ciudad-switch" aria-label="Seleccionar ciudad para clima">
+        <label class="ciudad-switch__label" for="ciudad">Ciudad</label>
+        <select id="ciudad" class="ciudad-switch__select" disabled>
+        <option value="" disabled selected>Seleccionar Ciudad</option>
+      </select>
+      </div>
+
+      <div class="theme-switch" aria-label="Cambiar tema">
+        <button class="theme-btn is-active" data-theme="ocean" type="button">Océano</button>
+        <button class="theme-btn" data-theme="sunset" type="button">Atardecer</button>
+        <button class="theme-btn" data-theme="forest" type="button">Bosque</button>
+      </div>
+
+      <button class="mode-switch" type="button">Modo oscuro</button>
+
+    </div>
+  </header>
+
+  <div class="main-content">
+
+    <section class="clock-section">
+      <div class="clock-wrapper">
+        <div class="clock" aria-label="Reloj analógico">
+          <div class="label" style="--i:1"><span>1</span></div>
+          <div class="label" style="--i:2"><span>2</span></div>
+          <div class="label" style="--i:3"><span>3</span></div>
+          <div class="label" style="--i:4"><span>4</span></div>
+          <div class="label" style="--i:5"><span>5</span></div>
+          <div class="label" style="--i:6"><span>6</span></div>
+          <div class="label" style="--i:7"><span>7</span></div>
+          <div class="label" style="--i:8"><span>8</span></div>
+          <div class="label" style="--i:9"><span>9</span></div>
+          <div class="label" style="--i:10"><span>10</span></div>
+          <div class="label" style="--i:11"><span>11</span></div>
+          <div class="label" style="--i:12"><span>12</span></div>
+
+          <div class="indicator">
+            <div class="hand hour"></div>
+            <div class="hand minute"></div>
+            <div class="hand second"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="forecast-section">
+      <div class="forecast" aria-label="Pronóstico 7 días">
+        <h2 class="forecast__title">Pronóstico 7 días</h2>
+        <div class="forecast__list" id="forecast-list"></div>
+      </div>
+    </section>
+
+  </div>
+
+</main>
