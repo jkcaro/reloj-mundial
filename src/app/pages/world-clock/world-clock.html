@@ -1,0 +1,7 @@
+<h1>Reloj Mundial</h1>
+
+<ul>
+  <li *ngFor="let c of clocks">
+    <strong>{{ c.city }}</strong> ({{ c.tz }}): {{ c.time }}
+  </li>
+</ul>
