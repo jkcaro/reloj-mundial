@@ -1,61 +1,109 @@
+cat << 'EOF' > README.md
+
 # reloj-mundial
 
-# RelojMundial
+Aplicación **Reloj Mundial** hecha en **Angular**. Muestra:
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.5.
+- 🕒 Reloj analógico + hora y fecha digital por zona
+- 🌍 Selector de país y ciudad (zona horaria + coordenadas)
+- 🌤️ Clima actual y pronóstico de 7 días (Open-Meteo)
+- 🎨 Temas (Océano / Atardecer / Bosque)
+- 🌙 Modo claro / oscuro
+- 💾 Persistencia con \`localStorage\`
 
-## Development server
+---
 
-To start a local development server, run:
+## Requisitos
 
-```bash
+- Node.js (recomendado: versión LTS)
+- Angular CLI (se puede usar con \`npx\`)
+
+---
+
+## Instalación
+
+Instala dependencias:
+
+\`\`\`bash
+npm install
+\`\`\`
+
+## Servidor de desarrollo
+
+Para levantar la app en local:
+
+\`\`\`bash
+npm start
+\`\`\`
+
+o también:
+
+\`\`\`bash
 ng serve
-```
+\`\`\`
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Luego abre:
 
-## Code scaffolding
+http://localhost:4200/
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+La aplicación se recargará automáticamente al guardar cambios.
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Generar código (scaffolding)
 
-```bash
+Angular CLI incluye herramientas para generar componentes, servicios, etc.
+
+Ejemplo:
+
+\`\`\`bash
+ng generate component nombre-componente
+\`\`\`
+
+Para ver todas las opciones:
+
+\`\`\`bash
 ng generate --help
-```
+\`\`\`
 
-## Building
+---
 
-To build the project run:
+## Compilar para producción
 
-```bash
+\`\`\`bash
 ng build
-```
+\`\`\`
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los archivos finales se generan en \`dist/\`.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Pruebas unitarias
 
-```bash
+\`\`\`bash
 ng test
-```
+\`\`\`
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Pruebas end-to-end (e2e)
 
-```bash
+\`\`\`bash
 ng e2e
-```
+\`\`\`
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Angular CLI no incluye un framework e2e por defecto; puedes configurar el que prefieras.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Créditos / Notas
+
+Proyecto generado con Angular CLI.  
+API de clima: Open-Meteo.
+
+---
+
+## Recursos
+
+Documentación Angular CLI: https://angular.dev/tools/cli
+EOF
