@@ -8,16 +8,21 @@ let $horaDigital: HTMLElement | null = null;
 let $fechaDigital: HTMLElement | null = null;
 
 let rafId: number | null = null;
-let baseTime = 0;
+
+// baseTime se guarda como MILISEGUNDOS UTC "de la zona"
+let baseTimeUTCms = 0;
 let basePerf = 0;
+
+let lastZona: string | null = null;
 
 type Estado = { zonaActiva: string };
 type GetEstado = () => Estado;
 
-/* =========================
-   Obtener fecha real por zona
-========================= */
-function obtenerFechaZona(zona: string): Date {
+/* =========================================================
+   Obtener timestamp UTC que representa "la hora actual en zona"
+   (IMPORTANTE: no construimos Date local con string sin offset)
+========================================================= */
+function obtenerZonaAhoraUTCms(zona: string): number {
   const ahora = new Date();
 
   const partes = new Intl.DateTimeFormat("es-ES", {
@@ -31,40 +36,38 @@ function obtenerFechaZona(zona: string): Date {
     hourCycle: "h23",
   }).formatToParts(ahora);
 
-  const get = (t: string) => partes.find((p) => p.type === t)?.value;
+  const getNum = (t: string) => Number(partes.find((p) => p.type === t)?.value);
 
-  return new Date(
-    `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`,
-  );
+  const y = getNum("year");
+  const mo = getNum("month");  // 1-12
+  const d = getNum("day");
+  const h = getNum("hour");
+  const mi = getNum("minute");
+  const s = getNum("second");
+
+  // Date.UTC usa mes 0-11
+  return Date.UTC(y, mo - 1, d, h, mi, s);
 }
 
 /* =========================
    Inicializar base estable
 ========================= */
 function initBase(zona: string): void {
-  const fechaZona = obtenerFechaZona(zona);
-  baseTime = fechaZona.getTime();
+  baseTimeUTCms = obtenerZonaAhoraUTCms(zona);
   basePerf = performance.now();
 }
 
 /* =========================
-   Animación ultra fluida
+   Renderizar analógico
+   (usa getters UTC para coherencia con baseTimeUTCms)
 ========================= */
-function tick(getEstado: GetEstado): void {
-  const { zonaActiva } = getEstado();
+function renderAnalogico(currentUTCms: number): void {
+  const d = new Date(currentUTCms);
 
-  // Si cambió la zona o no hay base, recalculamos base
-  if (!baseTime) initBase(zonaActiva);
-
-  const nowPerf = performance.now();
-  const elapsed = nowPerf - basePerf;
-
-  const currentTime = new Date(baseTime + elapsed);
-
-  const h = currentTime.getHours();
-  const m = currentTime.getMinutes();
-  const s = currentTime.getSeconds();
-  const ms = currentTime.getMilliseconds();
+  const h = d.getUTCHours();
+  const m = d.getUTCMinutes();
+  const s = d.getUTCSeconds();
+  const ms = d.getUTCMilliseconds();
 
   // Sweep continuo
   const sCont = s + ms / 1000;
@@ -74,21 +77,50 @@ function tick(getEstado: GetEstado): void {
   if ($segundo) $segundo.style.transform = `rotate(${sCont * 6}deg)`;
   if ($minuto) $minuto.style.transform = `rotate(${mCont * 6}deg)`;
   if ($hora) $hora.style.transform = `rotate(${hCont * 30}deg)`;
+}
 
-  // Digital (formateado por zona)
+/* =========================
+   Renderizar digital (la fuente de verdad visual)
+========================= */
+function renderDigital(zona: string): void {
+  const ahora = new Date();
+
   if ($horaDigital) {
     $horaDigital.textContent = new Intl.DateTimeFormat("es-ES", {
-      timeZone: zonaActiva,
+      timeZone: zona,
       timeStyle: "medium",
-    }).format(new Date());
+    }).format(ahora);
   }
 
   if ($fechaDigital) {
     $fechaDigital.textContent = new Intl.DateTimeFormat("es-ES", {
-      timeZone: zonaActiva,
+      timeZone: zona,
       dateStyle: "full",
-    }).format(new Date());
+    }).format(ahora);
   }
+}
+
+/* =========================
+   Animación ultra fluida
+========================= */
+function tick(getEstado: GetEstado): void {
+  const { zonaActiva } = getEstado();
+
+  // Recalcular base si: no hay base o cambió la zona
+  if (!baseTimeUTCms || lastZona !== zonaActiva) {
+    initBase(zonaActiva);
+    lastZona = zonaActiva;
+  }
+
+  const nowPerf = performance.now();
+  const elapsed = nowPerf - basePerf;
+
+  // Tiempo "actual" en zona, representado como UTCms coherente
+  const currentUTCms = baseTimeUTCms + elapsed;
+
+  // Analógico y digital apuntan a la MISMA zona
+  renderAnalogico(currentUTCms);
+  renderDigital(zonaActiva);
 
   rafId = requestAnimationFrame(() => tick(getEstado));
 }
@@ -106,12 +138,14 @@ export function iniciarReloj(getEstado: GetEstado): void {
 
   if (rafId) cancelAnimationFrame(rafId);
 
-  // Reset base para recalcular al iniciar
-  baseTime = 0;
+  // Reset base
+  baseTimeUTCms = 0;
   basePerf = 0;
+  lastZona = null;
 
-  const { zonaActiva } = getEstado();
-  initBase(zonaActiva);
+  // Iniciar
+  initBase(getEstado().zonaActiva);
+  lastZona = getEstado().zonaActiva;
 
   rafId = requestAnimationFrame(() => tick(getEstado));
 }

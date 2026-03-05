@@ -1,20 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { WorldClockComponent } from './world-clock';
 
-import { WorldClock } from './world-clock';
-
-describe('WorldClock', () => {
-  let component: WorldClock;
-  let fixture: ComponentFixture<WorldClock>;
+describe('WorldClockComponent', () => {
+  let component: WorldClockComponent;
+  let fixture: ComponentFixture<WorldClockComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WorldClock]
-    })
-    .compileComponents();
+      imports: [WorldClockComponent], // standalone => va en imports
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(WorldClock);
+    fixture = TestBed.createComponent(WorldClockComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
