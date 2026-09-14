@@ -14,36 +14,31 @@ let basePerf = 0;
 type Estado = { zonaActiva: string };
 type GetEstado = () => Estado;
 
-/* =========================
-   Obtener fecha real por zona
-========================= */
-function obtenerFechaZona(zona: string): Date {
+export function obtenerHoraZona(zona: string): { h: number; m: number; s: number; ms: number } {
   const ahora = new Date();
-
-  const partes = new Intl.DateTimeFormat("es-ES", {
+  const partes = new Intl.DateTimeFormat('en-US', {
     timeZone: zona,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
   }).formatToParts(ahora);
 
-  const get = (t: string) => partes.find((p) => p.type === t)?.value;
+  const get = (tipo: string) => partes.find((p) => p.type === tipo)?.value ?? '0';
 
-  return new Date(
-    `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}`,
-  );
+  return {
+    h: Number(get('hour')),
+    m: Number(get('minute')),
+    s: Number(get('second')),
+    ms: ahora.getMilliseconds(),
+  };
 }
 
 /* =========================
    Inicializar base estable
 ========================= */
-function initBase(zona: string): void {
-  const fechaZona = obtenerFechaZona(zona);
-  baseTime = fechaZona.getTime();
+function initBase(): void {
+  baseTime = Date.now();
   basePerf = performance.now();
 }
 
@@ -53,20 +48,11 @@ function initBase(zona: string): void {
 function tick(getEstado: GetEstado): void {
   const { zonaActiva } = getEstado();
 
-  // Si cambió la zona o no hay base, recalculamos base
-  if (!baseTime) initBase(zonaActiva);
+  if (!baseTime) initBase();
 
-  const nowPerf = performance.now();
-  const elapsed = nowPerf - basePerf;
+  const ahora = new Date();
+  const { h, m, s, ms } = obtenerHoraZona(zonaActiva);
 
-  const currentTime = new Date(baseTime + elapsed);
-
-  const h = currentTime.getHours();
-  const m = currentTime.getMinutes();
-  const s = currentTime.getSeconds();
-  const ms = currentTime.getMilliseconds();
-
-  // Sweep continuo
   const sCont = s + ms / 1000;
   const mCont = m + sCont / 60;
   const hCont = (h % 12) + mCont / 60;
@@ -75,43 +61,38 @@ function tick(getEstado: GetEstado): void {
   if ($minuto) $minuto.style.transform = `rotate(${mCont * 6}deg)`;
   if ($hora) $hora.style.transform = `rotate(${hCont * 30}deg)`;
 
-  // Digital (formateado por zona)
   if ($horaDigital) {
-    $horaDigital.textContent = new Intl.DateTimeFormat("es-ES", {
+    $horaDigital.textContent = new Intl.DateTimeFormat('es-ES', {
       timeZone: zonaActiva,
-      timeStyle: "medium",
-    }).format(new Date());
+      timeStyle: 'medium',
+    }).format(ahora);
   }
 
   if ($fechaDigital) {
-    $fechaDigital.textContent = new Intl.DateTimeFormat("es-ES", {
+    $fechaDigital.textContent = new Intl.DateTimeFormat('es-ES', {
       timeZone: zonaActiva,
-      dateStyle: "full",
-    }).format(new Date());
+      dateStyle: 'full',
+    }).format(ahora);
   }
 
   rafId = requestAnimationFrame(() => tick(getEstado));
 }
 
 export function iniciarReloj(getEstado: GetEstado): void {
-  // Asegurar DOM (Angular)
-  $hora = document.querySelector<HTMLElement>(".hour");
-  $minuto = document.querySelector<HTMLElement>(".minute");
-  $segundo = document.querySelector<HTMLElement>(".second");
+  $hora = document.querySelector<HTMLElement>('.hour');
+  $minuto = document.querySelector<HTMLElement>('.minute');
+  $segundo = document.querySelector<HTMLElement>('.second');
 
-  $horaDigital = document.querySelector<HTMLElement>("#digital-time");
-  $fechaDigital = document.querySelector<HTMLElement>("#digital-date");
+  $horaDigital = document.querySelector<HTMLElement>('#digital-time');
+  $fechaDigital = document.querySelector<HTMLElement>('#digital-date');
 
   if (!$hora || !$minuto || !$segundo || !$horaDigital || !$fechaDigital) return;
 
   if (rafId) cancelAnimationFrame(rafId);
 
-  // Reset base para recalcular al iniciar
   baseTime = 0;
   basePerf = 0;
-
-  const { zonaActiva } = getEstado();
-  initBase(zonaActiva);
+  initBase();
 
   rafId = requestAnimationFrame(() => tick(getEstado));
 }
